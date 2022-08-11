@@ -8,13 +8,13 @@ use domain\shared\value\ID;
 
 class CustomerEmailAddressChanged implements Event
 {
-    public readonly ID $customerId;
+    public readonly ID $customerID;
     public readonly EmailAddress $emailAddress;
     public readonly Hash $confirmationHash;
 
     private function __construct(ID $customerId, EmailAddress $emailAddress, Hash $confirmationHash)
     {
-        $this->customerId = $customerId;
+        $this->customerID = $customerId;
         $this->emailAddress = $emailAddress;
         $this->confirmationHash = $confirmationHash;
     }

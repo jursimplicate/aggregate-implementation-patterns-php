@@ -33,7 +33,7 @@ class Customer3
     /**
      * @param array<Event> $events
      */
-    public function reconstitute(array $events): Customer3
+    public static function reconstitute(array $events): Customer3
     {
         $customer = new Customer3();
 

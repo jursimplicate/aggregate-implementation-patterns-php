@@ -1,6 +1,6 @@
 <?php
 
-namespace unit\domain;
+namespace Unit\domain;
 
 class THelper
 {
