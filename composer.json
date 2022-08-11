@@ -1,0 +1,27 @@
+{
+    "name": "simplicate/aggregate-implementation-patterns-php",
+    "description": "PHP port of Aggregate Implementation Patterns",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Unit\\": "tests/unit/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jur de Vries",
+            "email": "jur.devries@simplicate.nl"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
