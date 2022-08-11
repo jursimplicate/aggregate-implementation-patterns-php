@@ -23,5 +23,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "ramsey/uuid": "^4.4"
+    }
 }
