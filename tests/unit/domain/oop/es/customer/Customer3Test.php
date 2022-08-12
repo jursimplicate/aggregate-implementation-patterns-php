@@ -74,7 +74,7 @@ class Customer3Test extends TestCase
 
     /**
      * @test
-     * @depends confirmEmailAddress
+     * @depends confirmEmailAddress_withWrongConfirmationHash
      */
     public function confirmEmailAddress_whenItWasAlreadyConfirmed(): void
     {
