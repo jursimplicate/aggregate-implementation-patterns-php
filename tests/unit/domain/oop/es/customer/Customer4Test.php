@@ -140,6 +140,34 @@ class Customer4Test extends TestCase
         $this->THEN_EmailAddressConfirmed();
     }
 
+    /**
+     * Methods for GIVEN
+     */
+
+    private function GIVEN(Event... $events): void
+    {
+        $this->registeredCustomer = Customer4::reconstitute($events);
+    }
+
+    private function customerIsRegistered(): CustomerRegistered
+    {
+        return CustomerRegistered::build($this->customerID, $this->emailAddress, $this->confirmationHash, $this->name);
+    }
+
+    private function __and_EmailAddressWasConfirmed(): CustomerEmailAddressConfirmed
+    {
+        return CustomerEmailAddressConfirmed::build($this->customerID);
+    }
+
+    private function __and_EmailAddressWasChanged(): CustomerEmailAddressChanged
+    {
+        return CustomerEmailAddressChanged::build($this->customerID, $this->changedEmailAddress, $this->changedConfirmationHash);
+    }
+
+    /**
+     * Methods for WHEN
+     */
+
     private function WHEN_RegisterCustomer()
     {
         $registerCustomer = RegisterCustomer::build($this->emailAddress->value, $this->name->givenName, $this->name->familyName);
@@ -147,6 +175,29 @@ class Customer4Test extends TestCase
         $this->customerID = $registerCustomer->customerID;
         $this->confirmationHash = $registerCustomer->confirmationHash;
     }
+
+    private function WHEN_ConfirmEmailAddress_With(?Hash $confirmationHash): void
+    {
+        $command = ConfirmCustomerEmailAddress::build($this->customerID->value, $confirmationHash->value);
+        try {
+            $this->registeredCustomer->confirmEmailAddress($command);
+        } catch (\Exception $e) {
+            self::fail(THelper::propertyIsNull("confirmationHash"));
+        }
+    }
+
+    private function WHEN_ChangeEmailAddress_With(?EmailAddress $emailAddress)
+    {
+        $command = ChangeCustomerEmailAddress::build($this->customerID->value, $emailAddress->value);
+        try {
+            $this->registeredCustomer->changeEmailAddress($command);
+        } catch (\Exception $e) {
+            self::fail(THelper::propertyIsNull("emailAddress"));
+        }
+    }
+    /**
+     * Methods for THEN
+     */
 
     private function THEN_CustomerRegistered()
     {
@@ -162,26 +213,6 @@ class Customer4Test extends TestCase
         self::assertEquals($this->emailAddress, $event->emailAddress, THelper::propertyIsWrong($method, "emailAddress"));
         self::assertEquals($this->confirmationHash, $event->confirmationHash, THelper::propertyIsWrong($method, "confirmationHash"));
         self::assertEquals($this->name, $event->name, THelper::propertyIsWrong($method, "name"));
-    }
-
-    private function GIVEN(Event... $events): void
-    {
-        $this->registeredCustomer = Customer4::reconstitute($events);
-    }
-
-    private function customerIsRegistered(): CustomerRegistered
-    {
-        return CustomerRegistered::build($this->customerID, $this->emailAddress, $this->confirmationHash, $this->name);
-    }
-
-    private function WHEN_ConfirmEmailAddress_With(?Hash $confirmationHash): void
-    {
-        $command = ConfirmCustomerEmailAddress::build($this->customerID->value, $confirmationHash->value);
-        try {
-            $this->registeredCustomer->confirmEmailAddress($command);
-        } catch (\Exception $e) {
-            self::fail(THelper::propertyIsNull("confirmationHash"));
-        }
     }
 
     private function THEN_EmailAddressConfirmed()
@@ -210,27 +241,6 @@ class Customer4Test extends TestCase
         self::assertEquals($this->customerID, $event->customerID, THelper::propertyIsWrong($method, "customerID"));
     }
 
-    private function __and_EmailAddressWasConfirmed(): CustomerEmailAddressConfirmed
-    {
-        return CustomerEmailAddressConfirmed::build($this->customerID);
-    }
-
-    private function THEN_NothingShouldHappen()
-    {
-        $recordedEvents = $this->registeredCustomer->getRecordedEvents();
-        self::assertEquals(0, count($this->registeredCustomer->getRecordedEvents()), THelper::noEventShouldHaveBeenRecorded(THelper::typeOfFirst($recordedEvents)));
-    }
-
-    private function WHEN_ChangeEmailAddress_With(?EmailAddress $emailAddress)
-    {
-        $command = ChangeCustomerEmailAddress::build($this->customerID->value, $emailAddress->value);
-        try {
-            $this->registeredCustomer->changeEmailAddress($command);
-        } catch (\Exception $e) {
-            self::fail(THelper::propertyIsNull("emailAddress"));
-        }
-    }
-
     private function THEN_EmailAddressChanged()
     {
         $method = "changeEmailAddress";
@@ -245,9 +255,10 @@ class Customer4Test extends TestCase
         self::assertEquals($this->changedEmailAddress, $event->emailAddress, THelper::propertyIsWrong($method, "emailAddress"));
     }
 
-    private function __and_EmailAddressWasChanged(): CustomerEmailAddressChanged
+    private function THEN_NothingShouldHappen()
     {
-        return CustomerEmailAddressChanged::build($this->customerID, $this->changedEmailAddress, $this->changedConfirmationHash);
+        $recordedEvents = $this->registeredCustomer->getRecordedEvents();
+        self::assertEquals(0, count($this->registeredCustomer->getRecordedEvents()), THelper::noEventShouldHaveBeenRecorded(THelper::typeOfFirst($recordedEvents)));
     }
 }
 
