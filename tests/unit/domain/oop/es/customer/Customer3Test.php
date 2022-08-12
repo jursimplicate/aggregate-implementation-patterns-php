@@ -41,6 +41,7 @@ class Customer3Test extends TestCase
         $this->wrongConfirmationHash = Hash::generate();
         $this->changedConfirmationHash = Hash::generate();
         $this->name = PersonName::build("John", "Doe");
+        $this->recordedEvents = [];
     }
 
     /** @test */
@@ -175,7 +176,7 @@ class Customer3Test extends TestCase
     {
         $command = ConfirmCustomerEmailAddress::build($this->customerID->value, $confirmationHash->value);
         try {
-            $recordedEvents = $this->registeredCustomer->confirmEmailAddress($command);
+            $this->recordedEvents = $this->registeredCustomer->confirmEmailAddress($command);
         } catch (\Exception $e) {
         self::fail(THelper::propertyIsNull("confirmationHash"));
     }
