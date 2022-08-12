@@ -88,6 +88,8 @@ Please always make the first failing test green!
 
 ## Setup
 The repository contains a *composer* file to set up the dependencies (PHPUnit 9.5).
+You need to have a local php running, preferably php8.1.
+Unit tests can be run using `composer run unit`, or use your favorite editor to run them.
 
 ## Primer
 

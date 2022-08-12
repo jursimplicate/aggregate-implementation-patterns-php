@@ -25,5 +25,8 @@
     "minimum-stability": "stable",
     "require": {
         "ramsey/uuid": "^4.4"
+    },
+    "scripts": {
+        "unit": "vendor/bin/phpunit"
     }
 }
