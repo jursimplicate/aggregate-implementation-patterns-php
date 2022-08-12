@@ -87,7 +87,7 @@ and you don't have to modify the existing code to complete the tasks.
 Please always make the first failing test green!  
 
 ## Setup
-The repository contains a *Gradle* build file to set up the dependencies (Junit 5.7).
+The repository contains a *composer* file to set up the dependencies (PHPUnit 9.5).
 
 ## Primer
 
