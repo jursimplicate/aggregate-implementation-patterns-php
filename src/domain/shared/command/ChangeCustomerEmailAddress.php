@@ -8,13 +8,13 @@ use domain\shared\value\ID;
 
 final class ChangeCustomerEmailAddress
 {
-    public readonly ID $customerId;
+    public readonly ID $customerID;
     public readonly EmailAddress $emailAddress;
     public readonly Hash $confirmationHash;
 
     private function __construct(string $customerId, string $emailAddress)
     {
-        $this->customerId = ID::build($customerId);
+        $this->customerID = ID::build($customerId);
         $this->emailAddress = EmailAddress::build($emailAddress);
         $this->confirmationHash = Hash::generate();
     }
