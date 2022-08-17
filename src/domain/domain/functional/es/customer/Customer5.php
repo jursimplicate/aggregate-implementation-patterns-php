@@ -6,6 +6,7 @@ use domain\shared\command\ChangeCustomerEmailAddress;
 use domain\shared\command\ConfirmCustomerEmailAddress;
 use domain\shared\command\RegisterCustomer;
 use domain\shared\event\CustomerEmailAddressChanged;
+use domain\shared\event\CustomerEmailAddressConfirmationFailed;
 use domain\shared\event\CustomerEmailAddressConfirmed;
 use domain\shared\event\CustomerRegistered;
 use domain\shared\event\Event;
@@ -14,7 +15,12 @@ class Customer5
 {
     public static function register(RegisterCustomer $command): ?CustomerRegistered
     {
-        return null; // TODO
+        return CustomerRegistered::build(
+            $command->customerID,
+            $command->emailAddress,
+            $command->confirmationHash,
+            $command->name
+        );
     }
 
     /**
@@ -30,17 +36,24 @@ class Customer5
 
         foreach ($eventStream as $event) {
             if ($event instanceof CustomerRegistered) {
-                // TODO
+                $confirmationHash = $event->confirmationHash;
             } else if ($event instanceof CustomerEmailAddressConfirmed) {
-                // TODO
+                $isEmailAddressConfirmed = true;
             } else if ($event instanceof CustomerEmailAddressChanged) {
-                // TODO
+                $isEmailAddressConfirmed = false;
+                $confirmationHash = $command->confirmationHash;
             }
         }
 
-        // TODO
+        if ( !$command->confirmationHash->equals($confirmationHash)) {
+            return [CustomerEmailAddressConfirmationFailed::build($command->customerID)];
+        }
 
-        return [];
+        if ($isEmailAddressConfirmed) {
+            return [];
+        }
+
+        return [CustomerEmailAddressConfirmed::build($command->customerID)];
     }
 
     /**
@@ -55,14 +68,22 @@ class Customer5
 
         foreach ($eventStream as $event) {
             if ($event instanceof CustomerRegistered) {
-                // TODO
+                $emailAddress = $event->emailAddress;
             } else if ($event instanceof CustomerEmailAddressChanged) {
-                // TODO
+                $emailAddress = $event->emailAddress;
             }
         }
 
-        // TODO
+        if ($emailAddress->equals($command->emailAddress)) {
+            return [];
+        }
 
-        return [];
+        return [
+            CustomerEmailAddressChanged::build(
+                $command->customerID,
+                $command->emailAddress,
+                $command->confirmationHash
+            )
+        ];
     }
 }
