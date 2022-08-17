@@ -44,17 +44,22 @@ class CustomerState
     {
         foreach ($events as $event)  {
             if ($event instanceof CustomerRegistered) {
-                // TODO
+                $this->emailAddress = $event->emailAddress;
+                $this->confirmationHash = $event->confirmationHash;
+                $this->name = $event->name;
+                $this->isEmailAddressConfirmed = false;
                 continue;
             }
 
             if ($event instanceof CustomerEmailAddressConfirmed) {
-                // TODO
+                $this->isEmailAddressConfirmed = true;
                 continue;
             }
 
             if ($event instanceof CustomerEmailAddressChanged) {
-                // TODO
+                $this->emailAddress = $event->emailAddress;
+                $this->confirmationHash = $event->confirmationHash;
+                $this->isEmailAddressConfirmed = false;
             }
         }
     }

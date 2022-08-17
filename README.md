@@ -141,3 +141,7 @@ will be how to test them.
 * have a look at the *ChangeCustomerName* Command and *CustomerNameChanged* Event
 * implement the required test cases first
 * implement just enough production code to make the test pass
+
+# Possible problems
+
+Customer 4: applying multiple events in one go might cause problems as properties are not set on the original class

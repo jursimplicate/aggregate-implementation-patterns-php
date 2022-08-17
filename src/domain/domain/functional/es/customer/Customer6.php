@@ -6,6 +6,7 @@ use domain\shared\command\ChangeCustomerEmailAddress;
 use domain\shared\command\ConfirmCustomerEmailAddress;
 use domain\shared\command\RegisterCustomer;
 use domain\shared\event\CustomerEmailAddressChanged;
+use domain\shared\event\CustomerEmailAddressConfirmationFailed;
 use domain\shared\event\CustomerEmailAddressConfirmed;
 use domain\shared\event\CustomerRegistered;
 use domain\shared\event\Event;
@@ -14,7 +15,12 @@ class Customer6
 {
     public static function register(RegisterCustomer $command): ?CustomerRegistered
     {
-        return null; // TODO
+        return CustomerRegistered::build(
+            $command->customerID,
+            $command->emailAddress,
+            $command->confirmationHash,
+            $command->name
+        );
     }
 
     /**
@@ -27,9 +33,15 @@ class Customer6
     {
         $current = CustomerState::reconstitute($eventStream);
 
-        // TODO
+        if (! $current->confirmationHash->equals($command->confirmationHash)) {
+            return [CustomerEmailAddressConfirmationFailed::build($command->customerID)];
+        }
 
-        return [];
+        if ($current->isEmailAddressConfirmed) {
+            return [];
+        }
+
+        return [CustomerEmailAddressConfirmed::build($command->customerID)];
     }
 
     /**
@@ -42,8 +54,16 @@ class Customer6
     {
         $current = CustomerState::reconstitute($eventStream);
 
-        // TODO
+        if ($current->emailAddress->equals($command->emailAddress)) {
+            return [];
+        }
 
-        return [];
+        return [
+            CustomerEmailAddressChanged::build(
+                $command->customerID,
+                $command->emailAddress,
+                $command->confirmationHash
+            )
+        ];
     }
 }
