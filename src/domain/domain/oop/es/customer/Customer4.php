@@ -17,7 +17,7 @@ class Customer4
 {
     private ?EmailAddress $emailAddress;
     private ?Hash $confirmationHash;
-    private bool $isEmailAdressConfirmed;
+    private bool $isEmailAdressConfirmed = false;
     private ?PersonName $name;
 
     private array $recordedEvents;
