@@ -26,6 +26,7 @@ class Customer6
     public static function confirmEmailAddress(array $eventStream, ConfirmCustomerEmailAddress $command): array
     {
         $current = CustomerState::reconstitute($eventStream);
+
         // TODO
 
         return [];
@@ -39,15 +40,7 @@ class Customer6
      */
     public static function changeEmailAddress(array $eventStream, ChangeCustomerEmailAddress $command): array
     {
-        $emailAddress = null;
-
-        foreach ($eventStream as $event) {
-            if ($event instanceof CustomerRegistered) {
-                // TODO
-            } else if ($event instanceof CustomerEmailAddressChanged) {
-                // TODO
-            }
-        }
+        $current = CustomerState::reconstitute($eventStream);
 
         // TODO
 
