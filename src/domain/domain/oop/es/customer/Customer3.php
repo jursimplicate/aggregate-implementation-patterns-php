@@ -6,6 +6,7 @@ use domain\shared\command\ChangeCustomerEmailAddress;
 use domain\shared\command\ConfirmCustomerEmailAddress;
 use domain\shared\command\RegisterCustomer;
 use domain\shared\event\CustomerEmailAddressChanged;
+use domain\shared\event\CustomerEmailAddressConfirmationFailed;
 use domain\shared\event\CustomerEmailAddressConfirmed;
 use domain\shared\event\CustomerRegistered;
 use domain\shared\event\Event;
@@ -17,7 +18,7 @@ class Customer3
 {
     private ?EmailAddress $emailAddress;
     private ?Hash $confirmationHash;
-    private bool $isEmailAdressConfirmed;
+    private bool $isEmailAdressConfirmed = false;
     private ?PersonName $name;
 
     private function __construct()
@@ -26,8 +27,12 @@ class Customer3
 
     public static function register(RegisterCustomer $command): ?CustomerRegistered
     {
-        // TODO
-        return null;
+        return CustomerRegistered::build(
+            $command->customerID,
+            $command->emailAddress,
+            $command->confirmationHash,
+            $command->name
+        );
     }
 
     /**
@@ -49,9 +54,14 @@ class Customer3
      */
     public function confirmEmailAddress(ConfirmCustomerEmailAddress $command): array
     {
-        // TODO
+        if (!$command->confirmationHash->equals($this->confirmationHash)) {
+            return [CustomerEmailAddressConfirmationFailed::build($command->customerID)];
+        }
+        if ($this->isEmailAdressConfirmed) {
+            return [];
+        }
 
-        return [];
+        return [CustomerEmailAddressConfirmed::build($command->customerID)];
     }
 
     /**
@@ -61,9 +71,16 @@ class Customer3
      */
     public function changeEmailAddress(ChangeCustomerEmailAddress $command): array
     {
-        // TODO
-
-        return [];
+        if ($this->emailAddress->equals($command->emailAddress)) {
+            return [];
+        }
+        return [
+            CustomerEmailAddressChanged::build(
+                $command->customerID,
+                $command->emailAddress,
+                $command->confirmationHash
+            )
+        ];
     }
 
     /**
@@ -79,13 +96,15 @@ class Customer3
     private function applyEvent(Event $event): void
     {
         if ($event instanceof CustomerRegistered) {
-            // TODO
-        }
-        elseif ($event instanceof CustomerEmailAddressConfirmed) {
-            // TODO
-        }
-        elseif ($event instanceof CustomerEmailAddressChanged) {
-            // TODO
+            $this->confirmationHash = $event->confirmationHash;
+            $this->emailAddress = $event->emailAddress;
+            $this->name = $event->name;
+        } elseif ($event instanceof CustomerEmailAddressConfirmed) {
+            $this->isEmailAdressConfirmed = true;
+        } elseif ($event instanceof CustomerEmailAddressChanged) {
+            $this->emailAddress = $event->emailAddress;
+            $this->confirmationHash = $event->confirmationHash;
+            $this->isEmailAdressConfirmed = false;
         }
     }
 }
